@@ -1,6 +1,6 @@
 # Insta fetch
 
-Comman line tool to fetch all meadia urls for one user and generate html from those.
+Command line tool to fetch all media urls for one user and generate static html page from those.
 
 ## Install
 ```
