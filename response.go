@@ -1,4 +1,4 @@
-package models
+package main
 
 type Image struct {
 	URL    string `json:"url"`

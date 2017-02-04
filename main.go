@@ -8,38 +8,29 @@ import (
 	"os"
 	"path"
 	"strings"
-	"sync"
 
-	"github.com/heppu/insta-fetch/models"
 	"github.com/valyala/fasthttp"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 const (
-	URL = "https://www.instagram.com/%s/media?max_id=%s"
-)
-
-var (
-	nicks    = kingpin.Flag("nicks", "Instagram nicks to fetch").Required().Short('n').Strings()
-	filePath = kingpin.Flag("path", "Path where nick.hmtl will be saved").Short('p').String()
+	URL   = "https://www.instagram.com/%s/media?max_id=%s"
+	USAGE = `
+	Usage:
+		insta-fetch [nick] [path]
+	`
 )
 
 func main() {
-	kingpin.Parse()
-
-	wg := &sync.WaitGroup{}
-	for _, nick := range *nicks {
-		wg.Add(1)
-		go process(nick, wg)
+	if len(os.Args) != 3 {
+		log.Fatal(USAGE)
 	}
-	wg.Wait()
+
+	process(os.Args[1], os.Args[2])
 }
 
-func process(nick string, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	ir := &models.InstaResponse{}
-	pics := make([]models.Image, 0)
+func process(nick, filePath string) {
+	ir := &InstaResponse{}
+	pics := make([]Image, 0)
 	minId := "0"
 
 	for {
@@ -77,12 +68,12 @@ func process(nick string, wg *sync.WaitGroup) {
 
 	log.Printf("Found %d pictures for %s\n", len(pics), nick)
 
-	file, err := os.Create(path.Join(*filePath, nick+".html"))
+	file, err := os.Create(path.Join(filePath, nick+".html"))
 	if err != nil {
 		log.Printf("Could not create file %s\n", err)
 	}
 
-	t, _ := template.New("photos").Parse(models.HTML)
+	t, _ := template.New("photos").Parse(HTML)
 	if err = t.Execute(file, pics); err != nil {
 		log.Printf("Could not write file %s\n", err)
 	}
