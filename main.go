@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/valyala/fasthttp"
 )
@@ -53,11 +52,9 @@ func process(nick, filePath string) {
 		}
 
 		for _, item := range ir.Items {
+
 			if item.Type == "image" {
-				if index := strings.Index(item.Images.StandardResolution.Image.URL, "?ig"); index != -1 {
-					item.Images.StandardResolution.Image.URL = item.Images.StandardResolution.Image.URL[0:index]
-					pics = append(pics, item.Images.StandardResolution.Image)
-				}
+				pics = append(pics, item.Images.StandardResolution.Image)
 			}
 		}
 		if !ir.MoreAvailable {
